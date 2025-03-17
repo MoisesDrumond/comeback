@@ -4,3 +4,4 @@ def impar_par(numero):
         return f'{numero} é par.'
     return f'{numero} é ímpar.'
 print(impar_par(2))
+print(impar_par(3))
