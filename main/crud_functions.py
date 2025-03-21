@@ -25,15 +25,16 @@ def update_user(users: list):
     if not users:
         clear()
         print('There is no users yet.')
+        return
+    list_user(users)
     try:
-        for id, user in enumerate(users):
-            print(f'id: {id}, name: {user['name']}, age: {user['age']}')
         update = int(input('Print the user id you wannna update: '))
-        if 0 <= update <= len(users):
+        if 0 <= update < len(users):
             update_name = input('Print your new name: ')
             update_age = int(input('Print your new age: '))
             user = {'name': update_name, 'age': update_age}
             users[update].update(user)
+            # users[update] = {'name': update_name, 'age': update_age}
             clear()
             print('User successfully updated!')
         else:
@@ -50,11 +51,10 @@ def delete_user(users: list):
     if not users:
         clear()
         print('There is no users yet.')
+    list_user(users)
     try:
-        for id, user in enumerate(users):
-            print(f'id: {id}, name: {user['name']}, age: {user['age']}')
         delete = int(input('Print the user id you wanna delete: '))
-        if 0 <= delete <= len(users):
+        if 0 <= delete < len(users):
             deleted = users.pop(delete)
             clear()
             print(f'The user {deleted['name']} is already deleted')
