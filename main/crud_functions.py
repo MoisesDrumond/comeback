@@ -51,6 +51,7 @@ def delete_user(users: list):
     if not users:
         clear()
         print('There is no users yet.')
+        return
     list_user(users)
     try:
         delete = int(input('Print the user id you wanna delete: '))
