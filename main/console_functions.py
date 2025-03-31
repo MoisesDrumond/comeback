@@ -11,8 +11,10 @@ def default_question():
 
 def option_not_found():
     try:
+        clear()
         raise Exception('Opção não encontrada!')
     except Exception as error:
+        clear()
         print(f'Erro: {error}')
 
 def clear():

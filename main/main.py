@@ -1,4 +1,4 @@
-from console_functions import default_question, option_not_found
+from console_functions import default_question, option_not_found, clear
 # from crud_functions import create_user
 import crud_functions
 
@@ -10,6 +10,7 @@ exit_option = 5
 
 
 def main():
+    clear()
     users = []
     option = None
 
