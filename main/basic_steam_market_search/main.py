@@ -46,7 +46,7 @@ def buscar_ak47(browser, timeout=10, primeira_pagina=True):
         wait.until(EC.presence_of_element_located((By.ID, 'searchResultsRows')))
 
     # Verifica se há itens AK-47
-    itens_ak = browser.find_elements(By.XPATH, '//a[contains(.,"m4")]')
+    itens_ak = browser.find_elements(By.XPATH, '//a[contains(.,"AK-47")]')
     if itens_ak:
         print(f'Encontrado {len(itens_ak)} item(s) AK-47.')
         itens_ak[0].click()
