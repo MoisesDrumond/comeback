@@ -1,26 +1,14 @@
-# type: ignore
 import sys
 from pathlib import Path
 from time import sleep
 from datetime import datetime
 
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-
-# Caminhos — ajusta para funcionar no PyInstaller e no script normal
-if getattr(sys, 'frozen', False):
-    ROOT_FOLDER = Path(sys._MEIPASS)
-else:
-    ROOT_FOLDER = Path(__file__).parent
-
-CHROME_DRIVER_PATH = ROOT_FOLDER / 'drivers' / 'chromedriver.exe'  # Windows
-
-
-# 🖥️ Criação do navegador
+# Criação do navegador — simplificado sem Service nem chromedriver manual
 def make_chrome_browser(*options: str) -> webdriver.Chrome:
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--start-maximized')
@@ -29,20 +17,17 @@ def make_chrome_browser(*options: str) -> webdriver.Chrome:
         for option in options:
             chrome_options.add_argument(option)
 
-    chrome_service = Service(executable_path=str(CHROME_DRIVER_PATH))
-    browser = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    browser = webdriver.Chrome(options=chrome_options)
     return browser
 
-
-# 🖼️ Função para capturar screenshots em caso de erro
+# Função para capturar screenshots em caso de erro
 def salvar_screenshot(browser, nome='screenshot'):
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    timestamp = datetime.now().strftime('%Y-%m-%d%H-%M-%S')
     filename = f'{nome}_{timestamp}.png'
     browser.save_screenshot(filename)
     print(f'[🖼️] Screenshot salva: {filename}')
 
-
-# 🔧 Função principal de ativar produtos da página
+# Função principal de ativar produtos da página
 def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
     wait = WebDriverWait(browser, timeout)
 
@@ -117,8 +102,7 @@ def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
 
     return True
 
-
-# ⏭️ Avança para a próxima página
+# Avança para a próxima página
 def avancar_pagina(browser, timeout=10) -> bool:
     try:
         wait = WebDriverWait(browser, timeout)
@@ -137,31 +121,24 @@ def avancar_pagina(browser, timeout=10) -> bool:
         print('[❌] Não há mais páginas para avançar.')
         return False
 
-
-# 🚀 Função para acessar os anúncios inativos (testa dois links possíveis)
+# Função para acessar os anúncios inativos (apenas o primeiro link)
 def acessar_anuncios_inativos(browser):
-    urls_possiveis = [
-        'https://www.mercadolivre.com.br/anuncios/lista?filters=OMNI_UNDER_REVIEW&loadSession=1&page=1&sort=DEFAULT&task=MODERATE_MARKETPLACE',
-        'https://www.mercadolivre.com.br/anuncios/lista?filters=OMNI_UNDER_REVIEW&page=1&sort=DEFAULT&task=MODERATE_MARKETPLACE&loadSession=1'
-    ]
+    url = 'https://www.mercadolivre.com.br/anuncios/lista?filters=OMNI_UNDER_REVIEW&loadSession=1&page=1&sort=DEFAULT&task=MODERATE_MARKETPLACE'
 
-    for url in urls_possiveis:
-        print(f'[🌐] Tentando acessar: {url}')
-        browser.get(url)
-        sleep(3)
+    print(f'[🌐] Tentando acessar: {url}')
+    browser.get(url)
+    sleep(3)
 
-        try:
-            browser.find_element(By.CSS_SELECTOR, '[data-testid="active-listing-container"]')
-            print('[✅] Página carregada com sucesso!')
-            return True
-        except:
-            print('[❌] Não carregou, tentando próximo link...')
+    try:
+        # Verifica se o conteúdo relevante foi carregado
+        browser.find_element(By.CSS_SELECTOR, '[data-testid="active-listing-container"]')
+        print('[✅] Página carregada com sucesso!')
+        return True  # Se a página foi carregada corretamente, retorna True
+    except Exception as e:
+        print(f'[❌] Não carregou. Erro: {e}')
+        return False
 
-    print('[❌] Nenhum dos links funcionou.')
-    return False
-
-
-# 🚀 Função principal
+# Função principal
 def navegar_e_ativar():
     browser = make_chrome_browser()
 
@@ -187,7 +164,6 @@ def navegar_e_ativar():
     finally:
         input('\n🛑 Processo finalizado. Pressione ENTER para fechar...')
         browser.quit()
-
 
 if __name__ == '__main__':
     navegar_e_ativar()
