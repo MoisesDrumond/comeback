@@ -150,7 +150,7 @@ def navegar_e_ativar():
     browser = make_chrome_browser()
 
     try:
-        browser.get('https://www.mercadolivre.com.br/anuncios/lista?page=1')
+        browser.get('')
         input('⚠️ Faça login manualmente e pressione ENTER para continuar...')
 
         sleep(2)

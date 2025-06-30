@@ -1,0 +1,47 @@
+🚀 BOT DE ATIVAÇÃO DE PRODUTOS - MERCADO LIVRE
+
+Desenvolvido para automatizar a ativação de produtos no Mercado Livre.
+
+
+======================================
+✅ COMO USAR:
+======================================
+
+1️⃣ Dê dois cliques no arquivo:
+   👉 main.exe
+
+2️⃣ O Google Chrome será aberto automaticamente.
+
+3️⃣ Faça login na sua conta do Mercado Livre normalmente.
+
+4️⃣ Após fazer o login, volte na janela do bot e pressione ENTER para iniciar o processo.
+
+5️⃣ O bot irá percorrer todas as páginas dos seus anúncios:
+   - Se encontrar anúncios INATIVOS, ele irá ativá-los automaticamente.
+   - Se todos estiverem ATIVOS, ele apenas avança de página até o final.
+
+6️⃣ Quando o bot finalizar, aparecerá uma mensagem:
+   👉 "Processo finalizado. Pressione ENTER para fechar..."
+
+7️⃣ Pressione ENTER para encerrar o programa.
+
+
+======================================
+⚙️ REQUISITOS:
+======================================
+
+- O navegador Google Chrome deve estar instalado no computador.
+
+- Não feche o navegador Chrome enquanto o bot estiver funcionando.
+
+- Mantenha a internet estável durante o processo.
+
+
+======================================
+❗ ATENÇÃO:
+======================================
+
+- Se o Google Chrome for atualizado e o bot parar de funcionar,
+  será necessário atualizar o arquivo "chromedriver.exe" que está na pasta "drivers".
+
+- Caso precise de ajuda, entre em contato comigo.

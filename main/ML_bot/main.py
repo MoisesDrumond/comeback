@@ -1,33 +1,41 @@
-import sys
-from pathlib import Path
+# type: ignore
 from time import sleep
 from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 
-# Criação do navegador — simplificado sem Service nem chromedriver manual
-def make_chrome_browser(*options: str) -> webdriver.Chrome:
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--start-maximized')
+from webdriver_manager.chrome import ChromeDriverManager
 
-    if options:
-        for option in options:
-            chrome_options.add_argument(option)
 
-    browser = webdriver.Chrome(options=chrome_options)
+# 🖥️ Criação do navegador com webdriver-manager (dispensa chromedriver manual)
+def make_chrome_browser() -> webdriver.Chrome:
+    options = webdriver.ChromeOptions()
+    options.add_argument('--start-maximized')
+    # options.add_argument('--headless')  # Se quiser rodar sem abrir navegador
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    browser = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()),
+        options=options
+    )
     return browser
 
-# Função para capturar screenshots em caso de erro
+
+# 🖼️ Captura de screenshots
 def salvar_screenshot(browser, nome='screenshot'):
-    timestamp = datetime.now().strftime('%Y-%m-%d%H-%M-%S')
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     filename = f'{nome}_{timestamp}.png'
     browser.save_screenshot(filename)
     print(f'[🖼️] Screenshot salva: {filename}')
 
-# Função principal de ativar produtos da página
+
+# 🔧 Ativa produtos inativos
 def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
     wait = WebDriverWait(browser, timeout)
 
@@ -55,7 +63,7 @@ def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
             nome_element = produto.find_element(By.CSS_SELECTOR, '[data-testid="listing-title"]')
             nome_produto = nome_element.text.strip()
 
-            if status_text != 'ativo':
+            if status_text == 'inativo':
                 print(f'[🛠️] Produto "{nome_produto}" ({index}) está INATIVO. Iniciando ativação...')
 
                 menu_button = produto.find_element(By.CSS_SELECTOR, '[data-testid="overflow-menu-button"]')
@@ -71,7 +79,7 @@ def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
 
                 try:
                     ativar_button = WebDriverWait(browser, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Ativar")]'))
+                        EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Reativar")]'))
                     )
                     ativar_button.click()
 
@@ -93,7 +101,7 @@ def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
                     sleep(0.5)
 
             else:
-                print(f'[✔️] Produto "{nome_produto}" ({index}) já está ATIVO.')
+                print(f'[✔️] Produto "{nome_produto}" ({index}) já está ATIVO ou não é aplicável.')
 
         except Exception as e:
             print(f'[⚠️] Erro no processamento do produto {index}: {e}')
@@ -102,7 +110,8 @@ def ativar_produtos_na_pagina(browser, timeout=15) -> bool:
 
     return True
 
-# Avança para a próxima página
+
+# ⏭️ Avança para a próxima página
 def avancar_pagina(browser, timeout=10) -> bool:
     try:
         wait = WebDriverWait(browser, timeout)
@@ -121,24 +130,25 @@ def avancar_pagina(browser, timeout=10) -> bool:
         print('[❌] Não há mais páginas para avançar.')
         return False
 
-# Função para acessar os anúncios inativos (apenas o primeiro link)
+
+# 🚀 Acessa os anúncios inativos
 def acessar_anuncios_inativos(browser):
     url = 'https://www.mercadolivre.com.br/anuncios/lista?filters=OMNI_UNDER_REVIEW&loadSession=1&page=1&sort=DEFAULT&task=MODERATE_MARKETPLACE'
 
-    print(f'[🌐] Tentando acessar: {url}')
+    print(f'[🌐] Acessando: {url}')
     browser.get(url)
     sleep(3)
 
     try:
-        # Verifica se o conteúdo relevante foi carregado
         browser.find_element(By.CSS_SELECTOR, '[data-testid="active-listing-container"]')
         print('[✅] Página carregada com sucesso!')
-        return True  # Se a página foi carregada corretamente, retorna True
-    except Exception as e:
-        print(f'[❌] Não carregou. Erro: {e}')
+        return True
+    except:
+        print('[❌] Página de anúncios não carregou.')
         return False
 
-# Função principal
+
+# 🚀 Função principal
 def navegar_e_ativar():
     browser = make_chrome_browser()
 
@@ -164,6 +174,7 @@ def navegar_e_ativar():
     finally:
         input('\n🛑 Processo finalizado. Pressione ENTER para fechar...')
         browser.quit()
+
 
 if __name__ == '__main__':
     navegar_e_ativar()
